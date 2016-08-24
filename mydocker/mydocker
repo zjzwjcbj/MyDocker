@@ -1,0 +1,271 @@
+#!/bin/bash
+
+#定义初始化环境的函数
+initenv()
+{
+    python /usr/local/sbin/setup_env.py
+}
+
+#定义构建基础镜像的函数
+createbaseimage()
+{
+    python /usr/local/sbin/create_base_image.py
+}
+
+#定义删除基础镜像的函数
+delbaseimage()
+{
+    python /usr/local/sbin/del_base_image.py
+}
+
+#定义批量创建服务端容器的函数
+bcreatesrv()
+{
+    python /usr/local/sbin/batch_create_server.py $1
+}
+
+#定义批量创建客户端容器的函数
+bcreatecli()
+{
+    python /usr/local/sbin/batch_create_client.py $1
+}
+
+#定义批量删除服务端容器的函数
+bdelsrv()
+{
+    python /usr/local/sbin/batch_delete_server.py $1
+}
+
+#定义批量删除客户端容器的函数
+bdelcli()
+{
+    python /usr/local/sbin/batch_delete_client.py $1
+}
+
+#定义查看服务端容器用户登录记录的函数
+srvlastlog()
+{
+    lastlogfile=/monitor/$1s/lastlog
+    if [ ! -s $lastlogfile ];then
+        echo "No user is logged on this host"
+    else
+    	cat $lastlogfile | sort -u
+    fi 
+}
+
+#定义查看客户端容器用户登录记录的函数
+clilastlog()
+{
+    lastlogfile=/monitor/$1c/lastlog
+    if [ ! -s $lastlogfile ];then
+        echo "No user is logged on this host"
+    else
+        cat /monitor/$1c/lastlog | sort -u
+    fi
+}
+
+#定义查看容器历史命令的函数
+history()
+{
+    python /usr/local/sbin/history.py $1 $2 $3
+}
+
+#定义检测服务端程序重复率的函数
+checkserverc()
+{
+	python /usr/local/sbin/compareserverc.py
+}
+
+#定义检测客户端程序重复率的函数
+checkclientc()
+{
+	python /usr/local/sbin/compareclientc.py
+}
+
+case $1 in
+--initenv)
+    initenv
+    ;;
+--createbaseimage)
+    createbaseimage
+    ;;
+--delbaseimage)
+    delbaseimage
+    ;;
+--bcreatesrv)
+	bcreatesrv $2
+    ;;
+--bcreatecli)
+    bcreatecli $2
+    ;;
+--bdelsrv)
+    bdelsrv $2
+    ;;
+--bdelcli)
+    bdelcli $2
+    ;;
+--startsrv)
+    if [ -z $2 ];then
+	echo "Usage: $0 --startsrv {StuID}"
+    else
+	docker start $2s > /dev/null 2>&1
+	if [ $? -eq 0 ];then
+	    echo "The Server Container:$2s Successful start"
+		exit 0
+	else
+	    echo "The Student ID error or does not exist!"
+		exit 1
+	fi
+    fi
+    ;;
+--startcli)
+    if [ -z $2 ];then
+	echo "Usage: $0 --startcli {StuID}"
+    else
+	docker start $2c > /dev/null 2>&1
+	if [ $? -eq 0 ];then
+	    echo "The Client Container:$2s Successful start"
+		exit 0
+	else
+	    echo "The Student ID error or does not exist!"
+		exit 1
+	fi
+    fi
+    ;;
+--stopsrv)
+    if [ -z $2 ];then
+	echo "Usage: $0 --stopsrv {StuID}"
+    else
+	docker stop $2s > /dev/null 2>&1
+	if [ $? -eq 0 ];then
+	    echo "The Server Container:$2s Successful stop"
+		exit 0
+	else
+	    echo "The Student ID error or does not exist!"
+		exit 1
+	fi
+    fi
+    ;;
+--stopcli)
+    if [ -z $2 ];then
+	echo "Usage: $0 --stopcli {StuID}"
+    else
+	docker stop $2c > /dev/null 2>&1
+	if [ $? -eq 0 ];then
+	    echo "The Client Container:$2s Successful stop"
+		exit 0
+	else
+	    echo "The Student ID error or does not exist!"
+		exit 1
+	fi
+    fi
+    ;;
+--restartsrv)
+    if [ -z $2 ];then
+	echo "Usage: $0 --restartsrv {StuID}"
+    else
+	docker stop $2s > /dev/null 2>&1 && docker start $2s > /dev/null 2>&1
+	if [ $? -eq 0 ];then
+	    echo "The Server Container:$2s Successful restart"
+		exit 0
+	else
+	    echo "The Student ID error or does not exist!"
+		exit 1
+	fi
+    fi
+    ;;
+--restartcli)
+    if [ -z $2 ];then
+	echo "Usage: $0 --restartcli {StuID}"
+    else
+	docker stop $2c > /dev/null 2>&1 && docker start $2c > /dev/null 2>&1
+	if [ $? -eq 0 ];then
+	    echo "The Server Container:$2c Successful restart"
+		exit 0
+	else
+	    echo "The Student ID error or does not exist!"
+		exit 1
+	fi
+    fi
+    ;;
+--statussrv)
+    if [ -z $2 ];then
+	echo "Usage: $0 --statussrv {StuID}"
+    else
+	docker ps -a | head -n 1 ;docker ps -a | /usr/bin/grep $2s
+    fi
+    ;;
+--statuscli)
+    if [ -z $2 ];then
+	echo "Usage: $0 --statuscli {StuID}"
+    else
+	docker ps -a | head -n 1 ;docker ps -a | /usr/bin/grep $2c
+    fi
+    ;;
+--srvlastlog)
+    if [ -z $2 ];then
+        echo "Usage: $0 --srvlastlog {StuID}"
+    else
+    	path=/monitor/$2s
+	if [ ! -d $path ];then
+	    echo "The Student ID error or does not exist!"
+		exit 1
+	else
+	    srvlastlog $2
+	fi
+    fi
+    ;;
+--clilastlog)
+    if [ -z $2 ];then
+        echo "Usage: $0 --clilastlog {StuID}"
+    else
+    	path=/monitor/$2c
+	if [ ! -d $path ];then
+	    echo "The Student ID error or does not exist!"
+		exit 1
+	else
+	    clilastlog $2
+	fi
+    fi
+    ;;
+--history)
+    history $2 $3 $4
+    ;;
+--checkserverc)
+	checkserverc
+	;;
+--checkclientc)
+	checkclientc
+	;;
+--help)
+    echo -e "Usage: mydocker [OPTION]... [PARAMETER]..."
+    echo -e "Manage online test management system\n"
+    echo -e "Available parameters are as follows:"
+	echo -e "  --initenv\tInstallation and Configuration docker and related python module"
+	echo -e "  --createbaseimage\tAutomatic build the students' experimental environment based image by dockerfile"
+	echo -e "  --delbaseimage\tRemove the students' experimental environment based image"
+	echo -e "  --bcreatesrv\tBatch create The Server Container"
+	echo -e "  --bcreatecli\tBatch create The Client Container"
+	echo -e "  --bdelsrv\tBatch delete The Server Container"
+	echo -e "  --bdelcli\tBatch delete The Client Container"
+	echo -e "  --startsrv\tStart The Server Container by Student ID"
+	echo -e "  --startcli\tStart The Client Container by Student ID"
+	echo -e "  --stopsrv\tStop The Server Container by Student ID"
+	echo -e "  --stopcli\tStop The Client Container by Student ID"
+	echo -e "  --restartsrv\tRestart The Server Container by Student ID"
+	echo -e "  --restartcli\tRestart The Server Container by Student ID"
+	echo -e "  --statussrv\tCheck the status of The Server Container by Student ID"
+	echo -e "  --statuscli\tCheck the status of The Client Container by Student ID"
+	echo -e "  --srvlastlog\tCheck The User Login Information of The Server Container by Student ID"
+	echo -e "  --clilastlog\tCheck The User Login Information of The Client Container by Student ID"
+	echo -e "  --history\tCheck The Container's History Command Record"
+	echo -e "  --checkserverc\tDetection The Server Code Repetition Rate"
+	echo -e "  --checkclientc\tDetection The Server Code Repetition Rate"
+	echo -e "  --help\tDisplay this Help and Exit"
+	echo -e "\nAUTHOR"
+	echo -e "  Written by Koenli."
+    ;;
+*)
+	echo -e "Try 'mydocker --help' for more information."
+	;;
+esac

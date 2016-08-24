@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}MyDocker-bcresrv{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+	<h1>批量创建服务端容器</h1>
+</div>
+{{ wtf.quick_form(form) }}
+<div class="panel panel-primary" style="border-color:#222;margin-top:15px">
+	<div class="panel-heading" style="background-color:#222">
+		<h3 class="panel-title">使用说明</h3>
+	</div>
+	<div class="panel-body">
+		<p>
+			<pre>
+  1.点击"选择文件"按钮，选择本学期上课的同学的点名册(例:namelist.xls)
+  2.点击Submit按钮，启动服务端容器创建进程
+
+  注：
+  1.上传点名册前请先将点名册的表头删除，并确保表格第一列为学生学号即可，表格格式如下图所示
+  2.提交之后，将在后台启动运行服务端容器的创建进程，创建需要消耗一定的时间，可在机器上执行docker ps -a命令来查看服务端容器的创建情况
+			</pre>
+			<img src="../static/example.png" alt="Excel File Format Example" max-width=100%>
+		</p>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+#!/usr/bin/expect -f  
+
+spawn ssh-keygen -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key
+expect {
+"*(empty for no passphrase):" { send "\r";exp_continue }
+"*Enter same passphrase again:" { send "\r" }
+}
+interact

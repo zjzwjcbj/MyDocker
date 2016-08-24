@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}MyDocker{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+	<h1>MyDocker-让你的实验环境尽在掌握之中</h1>
+</div>
+<div class="panel panel-primary" style="border-color:#222">
+	<div class="panel-heading" style="background-color:#222">
+		<h3 class="panel-title">命令管理</h3>
+	</div>
+	<div class="panel-body">
+		<p>
+			<pre>
+Usage: mydocker [OPTION]... [PARAMETER]...
+Manage online test management system
+
+Available parameters are as follows:
+  --initenv		Installation and Configuration docker and related python module
+  --createbaseimage	Automatic build the students' experimental environment based image by dockerfile
+  --delbaseimage	Remove the students' experimental environment based image
+  --bcreatesrv		Batch create The Server Container
+  --bcreatecli		Batch create The Client Container
+  --bdelsrv		Batch delete The Server Container
+  --bdelcli		Batch delete The Client Container
+  --startsrv		Start The Server Container by Student ID
+  --startcli		Start The Client Container by Student ID
+  --stopsrv		Stop The Server Container by Student ID
+  --stopcli		Stop The Client Container by Student ID
+  --restartsrv		Restart The Server Container by Student ID
+  --restartcli		Restart The Server Container by Student ID
+  --statussrv		Check the status of The Server Container by Student ID
+  --statuscli		Check the status of The Client Container by Student ID
+  --srvlastlog		Check The User Login Information of The Server Container by Student ID
+  --clilastlog		Check The User Login Information of The Client Container by Student ID
+  --history		Check The Container's History Command Record
+  --checkserverc	Detection The Server Code Repetition Rate
+  --checkclientc	Detection The Server Code Repetition Rate
+  --help		Display this Help and Exit
+
+AUTHOR
+  Written by Koenli.
+			</pre>
+		</p>
+	</div>
+</div>
+{% endblock %}
