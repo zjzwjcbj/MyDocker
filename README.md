@@ -55,6 +55,7 @@
 
     # git clone https://github.com/xautlmx/MyDocker.git
     # cp -r MyDocker/mydocker/* /usr/local/sbin/
+    # chmod +x /usr/local/sbin/mydocker
     # mydocker --initenv
     # mydocker --createbaseimage
     # cd MyDocker/myweb/
